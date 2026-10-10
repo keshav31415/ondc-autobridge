@@ -53,6 +53,15 @@ export class Database implements Query {
     await db.query(
       `CREATE TABLE IF NOT EXISTS protocol_messages (id TEXT PRIMARY KEY, merchant_id TEXT NOT NULL REFERENCES accounts(id), sender TEXT NOT NULL, action TEXT NOT NULL, request JSONB NOT NULL, response JSONB, status TEXT NOT NULL DEFAULT 'pending', attempts INT NOT NULL DEFAULT 0, next_at TIMESTAMPTZ NOT NULL DEFAULT NOW(), error TEXT, created_at TIMESTAMPTZ NOT NULL DEFAULT NOW())`,
     );
+    await db.query(
+      `CREATE TABLE IF NOT EXISTS build_jobs (id TEXT PRIMARY KEY, merchant_id TEXT NOT NULL REFERENCES accounts(id), input JSONB NOT NULL, mode TEXT NOT NULL, status TEXT NOT NULL DEFAULT 'queued', created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(), started_at TIMESTAMPTZ)`,
+    );
+    await db.query(
+      "CREATE INDEX IF NOT EXISTS protocol_pending ON protocol_messages (status,next_at)",
+    );
+    await db.query(
+      "CREATE INDEX IF NOT EXISTS build_pending ON build_jobs (status,created_at)",
+    );
     return db;
   }
   async query<T extends Record<string, unknown>>(

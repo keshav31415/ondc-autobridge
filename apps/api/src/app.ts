@@ -46,6 +46,8 @@ import {
   type Mapping,
 } from "./spreadsheets";
 import { bookSimulatedShipment, selectSimulatorRate } from "./logistics";
+import { attachProtocolRoutes } from "./protocol/queue";
+import { attachBuildRoutes } from "./builds";
 
 const credentials = z.object({
   email: z.email().transform((v) => v.toLowerCase()),
@@ -151,7 +153,7 @@ export async function createApplication(db: Database) {
             items: [
               { sku: sampleProducts[index].sku, quantity: index === 0 ? 2 : 1 },
             ],
-            pincode: ["560001", "410001", "110001", "600001"][index],
+            pincode: ["560001", "400001", "110001", "600001"][index],
             customer,
             address: "Demo address — no real shipment",
             idempotencyKey: `demo-order-${index}`,
@@ -386,8 +388,9 @@ export async function createApplication(db: Database) {
           "Returns require a delivered order",
         );
         assert(
-          Date.now() - Date.parse(order.updatedAt) <=
-            order.rules.returnDays * 86410000,
+          order.rules.returnDays > 0 &&
+            Date.now() - Date.parse(order.updatedAt) <=
+              order.rules.returnDays * 86400000,
           "Return window has closed",
         );
       }
@@ -457,6 +460,8 @@ export async function createApplication(db: Database) {
     });
     res.json({ ok: true });
   });
+  attachProtocolRoutes(app, db);
+  attachBuildRoutes(app, db);
   return app;
 }
 export function errorHandler(
@@ -466,13 +471,11 @@ export function errorHandler(
   _next: NextFunction,
 ) {
   if (error instanceof z.ZodError)
-    return res
-      .status(400)
-      .json({
-        error: error.issues
-          .map((i) => `${i.path.join(".")}: ${i.message}`)
-          .join("; "),
-      });
+    return res.status(400).json({
+      error: error.issues
+        .map((i) => `${i.path.join(".")}: ${i.message}`)
+        .join("; "),
+    });
   if (error instanceof DomainError)
     return res
       .status(error.status)

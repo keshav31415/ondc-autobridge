@@ -163,6 +163,7 @@ export type Order = {
   createdAt: string;
   updatedAt: string;
   reservationExpiresAt?: string;
+  deliveryInstructions?: string;
   shipment?: { id: string; provider: string; tracking: string; status: string };
   history: { at: string; event: string }[];
 };

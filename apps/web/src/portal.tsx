@@ -1517,7 +1517,7 @@ function Settings() {
               <Badge tone="amber">Setup pending</Badge>
             </div>
             {[
-              ["Retail seller service", "Local endpoint available"],
+              ["Retail seller service", "Local flow simulator ready"],
               [
                 "ONDC participant onboarding",
                 "Pending participant/subscriber setup",
@@ -1548,7 +1548,7 @@ function Settings() {
                 Advanced service details
               </summary>
               <div className="stack" style={{ marginTop: 20 }}>
-                <Field label="Local retail endpoint">
+                <Field label="Lab retail endpoint · disabled by default">
                   <input readOnly value={`/protocol/${snapshot.id}/{action}`} />
                 </Field>
                 <p className="subtle" style={{ fontSize: 12 }}>

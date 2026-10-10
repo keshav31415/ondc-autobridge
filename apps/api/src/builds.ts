@@ -328,6 +328,7 @@ export async function queueBuild(
       status: "queued",
       mode,
       version: s.ruleVersion,
+      inventoryVersion: s.inventoryVersion,
       createdAt: new Date().toISOString(),
       logs: [],
     });

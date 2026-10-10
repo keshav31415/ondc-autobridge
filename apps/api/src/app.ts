@@ -56,6 +56,8 @@ const credentials = z.object({
 export async function createApplication(db: Database) {
   const app = express();
   app.disable("x-powered-by");
+  const proxyHops = Number(process.env.TRUST_PROXY_HOPS ?? 0);
+  if (proxyHops > 0 && proxyHops <= 2) app.set("trust proxy", proxyHops);
   app.use(helmet());
   const origins = (process.env.WEB_ORIGIN ?? "http://127.0.0.1:3100").split(
     ",",
@@ -470,6 +472,19 @@ export function errorHandler(
   res: Response,
   _next: NextFunction,
 ) {
+  if (
+    error &&
+    typeof error === "object" &&
+    "type" in error &&
+    error.type === "entity.too.large"
+  )
+    return res
+      .status(413)
+      .json({
+        error: "Request is too large. Split this import into smaller files.",
+      });
+  if (error instanceof SyntaxError && "status" in error && error.status === 400)
+    return res.status(400).json({ error: "Invalid JSON request" });
   if (error instanceof z.ZodError)
     return res.status(400).json({
       error: error.issues

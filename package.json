@@ -17,7 +17,7 @@
     "typecheck": "tsc --noEmit && tsc --noEmit -p apps/web/tsconfig.json",
     "test": "vitest run",
     "test:coverage": "vitest run --coverage",
-    "test:e2e": "playwright test",
+    "test:integration": "vitest run tests/api.test.ts tests/database.test.ts tests/builds.test.ts tests/outbox.test.ts",
     "worker": "tsx apps/api/src/worker-entry.ts"
   },
   "dependencies": {

@@ -1,0 +1,47 @@
+# Local container validation. Set POSTGRES_PASSWORD in the shell before running.
+services:
+  postgres:
+    image: postgres:17-bookworm
+    environment:
+      POSTGRES_DB: autobridge
+      POSTGRES_USER: autobridge
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set a local database password}
+    volumes: ["postgres-data:/var/lib/postgresql/data"]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U autobridge"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+  api:
+    build: { context: ., target: api }
+    # Local HTTP needs non-secure cookies; cloud tasks use NODE_ENV=production.
+    environment: &api-environment
+      NODE_ENV: development
+      DATABASE_URL: postgresql://autobridge:${POSTGRES_PASSWORD}@postgres:5432/autobridge
+      WEB_ORIGIN: http://127.0.0.1:3100
+      INLINE_WORKER: "false"
+      PROTOCOL_MODE: disabled
+      ARTIFACT_DIR: /app/.data/artifacts
+    volumes: ["service-artifacts:/app/.data/artifacts"]
+    ports: ["127.0.0.1:4100:4100"]
+    depends_on:
+      postgres: { condition: service_healthy }
+    # Development normally binds loopback; this container explicitly binds its network.
+    command: ["node", "node_modules/tsx/dist/cli.mjs", "apps/api/src/container-entry.ts"]
+  worker:
+    build: { context: ., target: api }
+    environment: *api-environment
+    volumes: ["service-artifacts:/app/.data/artifacts"]
+    command: ["node", "node_modules/tsx/dist/cli.mjs", "apps/api/src/worker-entry.ts"]
+    depends_on:
+      postgres: { condition: service_healthy }
+  web:
+    build:
+      context: .
+      target: web
+      args: { API_ORIGIN: "http://api:4100" }
+    ports: ["127.0.0.1:3100:3100"]
+    depends_on: [api]
+volumes:
+  postgres-data:
+  service-artifacts:

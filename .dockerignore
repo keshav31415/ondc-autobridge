@@ -1,0 +1,17 @@
+node_modules
+**/node_modules
+**/.next
+.git
+.data
+.env
+.env.*
+!.env.example
+coverage
+artifacts
+generated
+test-results
+playwright-report
+*.log
+*.pem
+*.key
+reference

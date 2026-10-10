@@ -14,9 +14,13 @@ export function BuildPanel() {
   const [mode, setMode] = useState<"template" | "cline">("template");
   const build = snapshot.state.builds[0];
   const running = build?.status === "queued" || build?.status === "running";
+  const outdated =
+    build?.status === "passed" &&
+    (build.version !== snapshot.state.ruleVersion ||
+      build.inventoryVersion !== snapshot.state.inventoryVersion);
   useEffect(() => {
     if (!running) return;
-    const timer = setInterval(() => void refresh(), 2000);
+    const timer = setInterval(() => void refresh().catch(() => {}), 2000);
     return () => clearInterval(timer);
   }, [running, refresh]);
   return (
@@ -75,6 +79,12 @@ export function BuildPanel() {
           ? "Template mode runs real configuration checks and packages the seller service. It does not use or simulate Cline."
           : "Cline uses restricted tools to configure, validate and repair the build. Your model-provider account is charged for this run."}
       </Notice>
+      {outdated && (
+        <Notice>
+          Your saved rules or stock changed after this build. They already apply
+          in this portal. Build again to refresh the downloadable snapshot.
+        </Notice>
+      )}
       {build && (
         <>
           <div className="row spread">

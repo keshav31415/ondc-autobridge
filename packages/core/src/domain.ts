@@ -181,6 +181,7 @@ export type Build = {
   status: "queued" | "running" | "passed" | "failed";
   mode: "template" | "cline";
   version: number;
+  inventoryVersion?: number;
   createdAt: string;
   finishedAt?: string;
   logs: { at: string; message: string }[];

@@ -1,10 +1,23 @@
 {
   "compilerOptions": {
-    "target": "ES2022", "lib": ["ES2022", "DOM"], "module": "ESNext",
-    "moduleResolution": "Bundler", "strict": true, "noEmit": true,
-    "esModuleInterop": true, "skipLibCheck": true, "resolveJsonModule": true,
-    "types": ["node"], "allowImportingTsExtensions": true
+    "target": "ES2022",
+    "lib": ["ES2022", "DOM"],
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "strict": true,
+    "noEmit": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "resolveJsonModule": true,
+    "types": ["node"],
+    "allowImportingTsExtensions": true
   },
-  "include": ["apps/api/**/*.ts", "packages/**/*.ts", "scripts/**/*.ts", "tests/**/*.ts", "*.config.ts"],
+  "include": [
+    "apps/api/**/*.ts",
+    "packages/**/*.ts",
+    "scripts/**/*.ts",
+    "tests/**/*.ts",
+    "*.config.ts"
+  ],
   "exclude": ["node_modules", "generated", "artifacts"]
 }

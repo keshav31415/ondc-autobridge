@@ -1,0 +1,6 @@
+Item_Name,Cost_Price,Qty_Left,Veg_NonVeg,Category
+"Sharma Special Milk 1L",50,20,Veg,Dairy
+"Aashirvaad Atta 5kg",240,15,Veg,Grocery
+"Tata Salt 1kg",20,50,Veg,Grocery
+"Farm Fresh Eggs 6pcs",40,10,NonVeg,Dairy
+"Amul Butter 100g",55,30,Veg,Dairy

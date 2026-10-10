@@ -1,0 +1,17 @@
+node_modules/
+.next/
+dist/
+.data/
+artifacts/
+generated/
+coverage/
+test-results/
+playwright-report/
+.env
+.env.*
+!.env.example
+*.log
+*.tsbuildinfo
+.DS_Store
+*.pem
+*.key
